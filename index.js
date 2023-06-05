@@ -20,15 +20,21 @@ db.serialize(() => {
 
 const app = new Hono();
 
-app.get("/", (c) => {
-    return c.text("Hello World!");
+app.get("/", async (c) => {
+    const tweets = await new Promise((resolve) => {
+        db.all(queries.Tweets.findAll, (err, rows) => {
+            resolve(rows);
+        });
+    });
+
+    return c.json(tweets);
 });
 
 serve(app);
 
 process.stdin.on("data", (data) => {
-  if (data.toString().trim() === "q") {
-    db.close();
-    process.exit();
-  }
+    if (data.toString().trim() === "q") {
+        db.close();
+        process.exit();
+    }
 });
