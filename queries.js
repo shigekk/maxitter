@@ -9,9 +9,10 @@ const Tweets = {
     `,
     create: `INSERT INTO tweets (content, user_id, created_at) VALUES (?, ?, ?);`,
     findAll: `SELECT * FROM tweets;`,
-};
-
-const Users = {
+    findByUserId: `SELECT * FROM tweets WHERE user_id = ?;`,
+  };
+  
+  const Users = {
     createTable: `
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,10 +23,12 @@ const Users = {
     `,
     create: `INSERT INTO users (name, email, created_at) VALUES (?, ?, ?);`,
     findAll: `SELECT * FROM users;`,
+    findById: `SELECT * FROM users WHERE id = ?;`,
     findByTweetId: `SELECT * FROM users WHERE id = (SELECT user_id FROM tweets WHERE id = ?);`,
-};
-
-module.exports = {
+  };
+  
+  module.exports = {
     Tweets,
     Users,
-};
+  };
+  
