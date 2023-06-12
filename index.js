@@ -49,7 +49,7 @@ app.post("/user/register", async (c) => {
     const now = new Date().toISOString();
 
     const userID = await new Promise((resolve) => {
-        db.run(queries.Users.create, body.name, body.email, now, function(err) {
+        db.run(queries.Users.create, body.name, body.email, now, (err) => {
             resolve(this.lastID);
         });
     });
@@ -81,6 +81,33 @@ app.get("/user/:id", async (c) => {
     const response = templates.HTML(userTweetList);
 
     return c.html(response);
+});
+
+app.get("/tweet", async (c) => {
+    const users = await new Promise((resolve) => {
+        db.all(queries.Users.findAll, (err, rows) => {
+            resolve(rows);
+        });
+    });
+
+    const tweetForm = templates.TWEET_FORM_VIEW(users);
+
+    const response = templates.HTML(tweetForm);
+
+    return c.html(response);
+});
+
+app.post("/tweet", async (c) => {
+    const body = await c.req.parseBody();
+    const now = new Date().toISOString();
+
+    await new Promise((resolve) => {
+        db.run(queries.Tweets.create, body.content, body.user_id, now, (err) => {
+            resolve();
+        });
+    });
+
+    return c.redirect("/");
 });
 
 app.use("/static/*", serveStatic({ root: "./" }));
